@@ -1,0 +1,11 @@
+huggingface-hub==0.22.2
+langchain==0.1.16
+onnxruntime==1.17.0
+packaging==23.2
+pyaudio==0.2.14
+torch==2.1.2
+torchaudio==2.1.2
+tts==0.22.0
+matplotlib
+waitress==3.0.0
+expiringdict==1.2.2
