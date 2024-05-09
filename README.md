@@ -1,21 +1,32 @@
-# deepdrive_voice
+# deepdrive_ai
 
-TODO: PR for 
-```python
-    def int2float(self, sound):
-        abs_max = np.abs(sound).max()
-        sound = sound.astype('float32')
-        if abs_max > 0:
-            sound *= 1/32768
-        sound = sound.squeeze()  # depends on the use case
-        return sound
+## TODO: 
+- [ ] Move TTS and/or whisper to Jetson for lower latency (lower chunks size)
+- [ ] no module named "expiringdict"
+- [ ] `create_llama_goal` needs prompt from langchain to have correct prompt format
+- [ ] RAG Vector store
+- [ ] Load phi3 and llava separately, llava will generate text describing photos and phi will generate embeddings and store them in vector store for RAG.
+- [ ] Function calling for internal ROS stuff, like nav2 goals
+- [ ] Function for TTS
+- [ ] CrewAI
+- [ ] Try running phi3 on jetson orin nano
+- [ ] for some reason, chatbot needs to run on same machine as llm
+
+
 ```
-
-TODO: no module named "expiringdict"
-
+ENV WHISPER_CUDA=1
+```
 
 ```
 make docker_run
+```
+
+```sh
+colcon build --symlink-install
+source install/setup.bash
+
+ros2 launch deepdrive_ai_bringup llm.phi-3.launch.py
+ros2 run deepdrive_ai langchain_test
 ```
 
 on machine with speakers and microphone:
@@ -26,8 +37,10 @@ ros2 run audio_common audio_capturer_node  --ros-args -r audio:=audio/in
 
 on machine with gpu
 ```sh
-ros2 launch deepdrive_voice_bringup chatbot.launch.py
-ros2 launch chatbot_bringup chatbot.launch.py
+ros2 launch deepdrive_ai chatbot.launch.py
+ros2 launch deepdrive_ai_bringup chatbot.launch.py
+
+
 
 #  --ros-args -p launch_audio_capturer:=False -p launch_audio_player:=False
 # --ros-args -r __node:=llama_node -r __ns:=/llama 
@@ -37,23 +50,30 @@ ros2 launch foxglove_bridge foxglove_bridge_launch.xml
 ```
 
 ```sh
-ros2 launch deepdrive_voice_bringup marcoroni.launch.py
-ros2 launch deepdrive_voice_bringup llama3.launch.py
-ros2 launch deepdrive_voice_bringup hermes.launch.py
+ros2 launch deepdrive_ai_bringup llm.phi-3.launch.py
+ros2 launch deepdrive_ai_bringup llm.llama3.launch.py
 
 
 
 ros2 run llama_ros llama_demo_node --ros-args -p prompt:="why is america called america?"
 
 
-
-# model_repo="TheBloke/Marcoroni-7B-v3-GGUF",
-# model_filename="marcoroni-7b-v3.Q4_K_M.gguf",
-
 # ros2 run tts_ros tts_node --ros-args -p chunk:=4096 -p frame_id:="base_link" -p model:="your-model" -p speaker_wav:="/path/to/wav/file" device:="cuda:0"
 
 ros2 action send_goal /say audio_common_msgs/action/TTS "{'text': 'The name America is derived from the Native American word Amerika, which means land of the free or land of to the continent by the indigenous peoples who inhabited it before the arrival of Europeans. The name was later adopted by Europeans who arrived in the region and established the United States of America. The name America is used to refer to the country and its people, as well as to the continent of North America.'}"
 ```
+
+
+llava
+```sh
+ros2 launch llama_bringup llava.launch.py
+
+time ros2 run llama_ros llava_demo_node --ros-args -p image_url:="https://raw.githubusercontent.com/mattwilliamson/deepdrive/bcff2f2b23ace6a4f882e00581d12ab45c92f645/src/deepdrive_camera/living_room_rgb.jpg" -p prompt:="What room is this in. Example kitchen"
+
+```
+
+llava.launch.py: system_prompt_file
+
 
 ### Uncomment in `src/llama_ros/llama_ros/CMakeLists.txt`
 ```
@@ -69,6 +89,8 @@ n_gpu_layers = 99
 ### Uncomment in `src/whisper_ros/whisper_ros/CMakeLists.txt`
 ```
 option(WHISPER_CUBLAS "whisper: support for cuBLAS" ON)
+
+# or is it WHISPER_CUDA=1?
 ```
 
 
@@ -123,7 +145,7 @@ root@hugger:~/ros2_ws# tts --list_models
  39: tts_models/de/thorsten/tacotron2-DDC
  40: tts_models/de/css10/vits-neon
  41: tts_models/ja/kokoro/tacotron2-DDC
- 42: tts_models/tr/common-voice/glow-tts
+ 42: tts_models/tr/common-ai/glow-tts
  43: tts_models/it/mai_female/glow-tts
  44: tts_models/it/mai_female/vits
  45: tts_models/it/mai_male/glow-tts
@@ -151,7 +173,7 @@ root@hugger:~/ros2_ws# tts --list_models
  67: tts_models/fa/custom/glow-tts
  68: tts_models/bn/custom/vits-male
  69: tts_models/bn/custom/vits-female
- 70: tts_models/be/common-voice/glow-tts
+ 70: tts_models/be/common-ai/glow-tts
 
  Name format: type/language/dataset/model
  1: vocoder_models/universal/libri-tts/wavegrad
@@ -169,9 +191,9 @@ root@hugger:~/ros2_ws# tts --list_models
  13: vocoder_models/de/thorsten/hifigan_v1
  14: vocoder_models/ja/kokoro/hifigan_v1
  15: vocoder_models/uk/mai/multiband-melgan
- 16: vocoder_models/tr/common-voice/hifigan
- 17: vocoder_models/be/common-voice/hifigan
+ 16: vocoder_models/tr/common-ai/hifigan
+ 17: vocoder_models/be/common-ai/hifigan
 
  Name format: type/language/dataset/model
- 1: voice_conversion_models/multilingual/vctk/freevc24
+ 1: ai_conversion_models/multilingual/vctk/freevc24
  ```
