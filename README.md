@@ -1,6 +1,8 @@
 # deepdrive_ai
 
 ## TODO: 
+- [x] TTS doesn't support speaker for xtts_v2 - no param
+- [x] TTS pipe instead of saving to temp file
 - [ ] Move TTS and/or whisper to Jetson for lower latency (lower chunks size)
 - [ ] no module named "expiringdict"
 - [ ] `create_llama_goal` needs prompt from langchain to have correct prompt format
@@ -28,6 +30,21 @@ source install/setup.bash
 ros2 launch deepdrive_ai_bringup llm.phi-3.launch.py
 ros2 run deepdrive_ai langchain_test
 ```
+
+agree to tts license:
+```python
+from TTS.api import TTS as TtsModel
+TtsModel("tts_models/multilingual/multi-dataset/xtts_v2")
+```
+
+```sh
+ros2 launch deepdrive_ai_bringup tts.launch.py
+ros2 run tts_ros tts_node --ros-args -p chunk:=4096 -p frame_id:="base_link" -p model:="tts_models/multilingual/multi-dataset/xtts_v2" -p speaker_wav:="/home/matt/src/deepdrive_ai/src/deepdrive_ai/deepdrive_ai/audio/scarjo.wav" -p device:="cuda"
+```
+```sh
+ros2 action send_goal /say audio_common_msgs/action/TTS "{'text': 'Hello there. Please let me know if I can be of any assistance.'}"
+```
+
 
 on machine with speakers and microphone:
 ```sh
@@ -98,7 +115,21 @@ option(WHISPER_CUBLAS "whisper: support for cuBLAS" ON)
 
 TTS Models
 
+https://docs.coqui.ai/en/dev/models/xtts.html
+
 ```sh
+tts --model_name tts_models/multilingual/multi-dataset/xtts_v2 --list_speaker_idx
+
+dict_keys(['Claribel Dervla', 'Daisy Studious', 'Gracie Wise', 'Tammie Ema', 'Alison Dietlinde', 'Ana Florence', 'Annmarie Nele', 'Asya Anara', 'Brenda Stern', 'Gitta Nikolina', 'Henriette Usha', 'Sofia Hellen', 'Tammy Grit', 'Tanja Adelina', 'Vjollca Johnnie', 'Andrew Chipper', 'Badr Odhiambo', 'Dionisio Schuyler', 'Royston Min', 'Viktor Eka', 'Abrahan Mack', 'Adde Michal', 'Baldur Sanjin', 'Craig Gutsy', 'Damien Black', 'Gilberto Mathias', 'Ilkin Urbano', 'Kazuhiko Atallah', 'Ludvig Milivoj', 'Suad Qasim', 'Torcull Diarmuid', 'Viktor Menelaos', 'Zacharie Aimilios', 'Nova Hogarth', 'Maja Ruoho', 'Uta Obando', 'Lidiya Szekeres', 'Chandra MacFarland', 'Szofi Granger', 'Camilla Holmström', 'Lilya Stainthorpe', 'Zofija Kendrick', 'Narelle Moon', 'Barbora MacLean', 'Alexandra Hisakawa', 'Alma María', 'Rosemary Okafor', 'Ige Behringer', 'Filip Traverse', 'Damjan Chapman', 'Wulf Carlevaro', 'Aaron Dreschner', 'Kumar Dahl', 'Eugenio Mataracı', 'Ferran Simen', 'Xavier Hayasaka', 'Luis Moray', 'Marcos Rudaski'])
+
+
+
+tts --model_name tts_models/multilingual/multi-dataset/xtts_v2 \
+    --text "Hello there. Please let me know if I can be of any assistance." \
+    --speaker_idx "Ana Florence" \
+    --language_idx en \
+    --use_cuda true
+
 root@hugger:~/ros2_ws# tts --list_models
 /usr/local/lib/python3.10/dist-packages/matplotlib/projections/__init__.py:63: UserWarning: Unable to import Axes3D. This may be due to multiple versions of Matplotlib being installed (e.g. as a system package and as a pip package). As a result, the 3D projection is not available.
   warnings.warn("Unable to import Axes3D. This may be due to multiple versions of "

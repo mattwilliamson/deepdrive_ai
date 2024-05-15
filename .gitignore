@@ -30,7 +30,6 @@ log
 .venv
 .clang-tidy
 .vs/
-.vscode/
 .idea/
 
 ggml-metal-embed.metal

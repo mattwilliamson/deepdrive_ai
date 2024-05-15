@@ -1,0 +1,14 @@
+{
+    "python.analysis.extraPaths": [
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages/",
+        "./install/whisper_msgs/local/lib/python3.10/dist-packages",
+        "./install/yasmin_ros/local/lib/python3.10/dist-packages",
+        "./install/yasmin/local/lib/python3.10/dist-packages",
+        "./install/llama_msgs/local/lib/python3.10/dist-packages",
+        "./install/audio_common_msgs/local/lib/python3.10/dist-packages",
+        "./install/yasmin_viewer/local/lib/python3.10/dist-packages",
+        "./install/llama_ros/local/lib/python3.10/dist-packages",
+        "./install/llama_bringup/local/lib/python3.10/dist-packages"
+    ]
+}
