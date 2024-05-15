@@ -29,7 +29,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         create_llama_launch(
-            n_ctx=4 * 1024,
+            n_ctx=8 * 1024,
             n_batch=8,
             n_gpu_layers=33,
             n_threads=1,
@@ -40,10 +40,10 @@ def generate_launch_description():
             model_filename="starling-lm-7b-alpha.Q5_K_M.gguf", # large, very low quality loss - recommended 7.63 GB
 
             # GPT4 User: {prompt}<|end_of_turn|>GPT4 Assistant:
-            prefix="GPT4 User:",
-            suffix="<|end_of_turn|>GPT4 Assistant:",
-            stopping_words=["<|end_of_turn|>"],
+            prefix="GPT4 Correct User: ",
+            suffix="<|end_of_turn|>GPT4 Correct Assistant:",
+            stopping_words=["<|end_of_turn|>", "<|end_of_turn|"],
 
-            system_prompt_type="OpenChat"
+            system_prompt_type="openchat"
         )
     ])

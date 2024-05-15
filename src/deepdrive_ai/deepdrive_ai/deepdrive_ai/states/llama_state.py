@@ -25,6 +25,39 @@ class LlamaState(ActionState):
 
     def __init__(self) -> None:
 
+
+#         self.prompt = f"""<|im_start|>system
+# You are an A. I. assistant that follows instruction extremely well. Help as much as you can, but be polite and brief. Your name is 'Deep Drive'. You live inside a 4 wheeled robot that can drive around the home and see things. You have a wide angle camera. a stereo depth camera, a two dimentional lidar, motion sensors.<|im_end|>
+# <|im_start|>user
+# {blackboard.stt}<|im_end|>
+# <|im_start|>assistant
+# """
+        
+        # Phi3
+#         self.prompt = f"""<|system|>
+# Below is an instruction that describes a task. Write a response that appropriately completes the request<|end|>
+# <|user|>
+# Hello<|end|>
+# <|assistant|>
+# Hello<|end|>"""
+        
+        # Starling/OpenChat
+        # GPT4 Correct User: {prompt}<|end_of_turn|>GPT4 Correct Assistant:
+        self.prompt = f"""GPT4 Correct User: Below is an instruction that describes a task. Write a response that appropriately completes the request<|end_of_turn|>
+GPT4 Correct Assistant: Hi there! How can I help you today?<|end_of_turn|>
+GPT4 Correct User: Please check your battery level<|end_of_turn|>
+GPT4 Correct Assistant: The battery level is at 80%<|end_of_turn|>"""
+        
+        # Llama3
+#         self.prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+# Below is an instruction that describes a task. Write a response that appropriately completes the request<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+# Hello<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+# Hello<|eot_id|><|start_header_id|>user<|end_header_id|>"""
+
+
         super().__init__(
             GenerateResponse, "/llama/generate_response",
             self.create_llama_goal,
@@ -33,41 +66,8 @@ class LlamaState(ActionState):
 
     def create_llama_goal(self, blackboard: Blackboard) -> GenerateResponse.Goal:
         goal = GenerateResponse.Goal()
-
-#         promtp = f"""<|im_start|>system
-# You are an A. I. assistant that follows instruction extremely well. Help as much as you can, but be polite and brief. Your name is 'Deep Drive'. You live inside a 4 wheeled robot that can drive around the home and see things. You have a wide angle camera. a stereo depth camera, a two dimentional lidar, motion sensors.<|im_end|>
-# <|im_start|>user
-# {blackboard.stt}<|im_end|>
-# <|im_start|>assistant
-# """
-        
-        # Phi3
-#         promtp = f"""<|system|>
-# Below is an instruction that describes a task. Write a response that appropriately completes the request<|end|>
-# <|user|>
-# Hello<|end|>
-# <|assistant|>
-# Hello<|end|>"""
-        
-        # Starling/OpenChat
-        # GPT4 User: {prompt}<|end_of_turn|>GPT4 Assistant:
-        promtp = f"""GPT4 User: Below is an instruction that describes a task. Write a response that appropriately completes the request<|end_of_turn|>
-GPT4 Assistant: Hi there! How can I help you today?<|end_of_turn|>
-GPT4 User: Please check your battery level<|end_of_turn|>
-GPT4 Assistant: The battery level is at 80%<|end_of_turn|>
-GPT4 User: {blackboard.stt}<|end_of_turn|>"""
-
-        
-        # Llama3
-#         promtp = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-
-# Below is an instruction that describes a task. Write a response that appropriately completes the request<|eot_id|><|start_header_id|>user<|end_header_id|>
-
-# Hello<|eot_id|><|start_header_id|>assistant<|end_header_id|>
-
-# Hello<|eot_id|><|start_header_id|>user<|end_header_id|>"""
-
-        goal.prompt = promtp
+        self.prompt = f"""{self.prompt}GPT4 Correct Assistant: {blackboard.tts}<|end_of_turn|>GPT4 Correct User: {blackboard.stt}<|end_of_turn|>"""
+        goal.prompt = self.prompt
         goal.reset = True
         return goal
 

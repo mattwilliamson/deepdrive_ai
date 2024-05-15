@@ -35,5 +35,7 @@ class SpeakState(ActionState):
 
     def create_tts_goal(self, blackboard: Blackboard) -> TTS.Goal:
         goal = TTS.Goal()
-        goal.text = remove_tags(blackboard.tts.replace("\n", ". "))
+        goal.text = remove_tags(blackboard.tts.replace("\n", ". ").replace("*", ".").strip())
+        if goal.text.endswith("<|end_of_turn|"):
+            goal.text = goal.text.replace("<|end_of_turn|", "")
         return goal
